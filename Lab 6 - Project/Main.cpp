@@ -59,8 +59,19 @@ int main(void)
 		//if (wordCount > 0)
 		//{
 		//	if (address == S_TO_D_COMMAND_VALUE)
+		//	{
 		//		// search from the address of 40000818 to 40000C14
-		//		searchSToDCommandAddress (address, data, size, 
+		//		int startSearchingAddress = 40000818;
+		//		
+		//		do
+		//		{
+		//			do
+		//			{
+		//				inFile >> address;
+		//			} while( stoi(address) != startSearchingAddress );
+
+		//		} while ();
+		//	}
 		//	else
 		//		// search from the address of 40000C20 to 4000101C 
 		//}

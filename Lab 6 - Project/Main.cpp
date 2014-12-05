@@ -1,3 +1,7 @@
+// Bounpaseuth Saysavath
+// Lab 6
+// CS 254
+
 #include"Tools.h"
 
 #include<iostream>
@@ -26,7 +30,7 @@ int main(void)
 	if (!inFile.is_open())
 	{
 		cout << "Can't open test_data.log" << endl;
-		pause();
+		pause ("Press enter to exit.");
 		exit(1);
 	}
 	do
@@ -40,19 +44,23 @@ int main(void)
 		inFile >> size;
 		inFile >> cycle;
 
-		cout << address << " " << data << " " << size << " " << cycle << endl;
+		cout << "Address: " << address << endl;
+		cout << "Data: " << data << endl;
+		cout << "Size: " << size << endl;
+		cout << "Cycle: " << cycle << endl;
 
 
 		// Convert the hex in data variable to unsigned int
-		cout << convertHexaToUnsignedInt (data) << endl;
+		unsigned int decimalValue = convertHexaToUnsignedInt (data);
+		cout << "Number of words: " << decimalValue << endl;
 		
 		cout << endl;
-	} while (getBool( "Keep looking? " ));
+	} while (getBool( "Keep looking? " ) && !inFile.eof());
 
 
 	inFile.close();
 
-	pause();
+	pause ("Press enter to exit.");
 	return 0;
 }
 

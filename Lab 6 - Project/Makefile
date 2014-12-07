@@ -1,9 +1,8 @@
-all:	main
+all:	lab6
 
-lab6:	main.o
-	g++ main.o -o lab6
+lab6:	Main.o
+	g++ Main.o -o lab6
 
-main.o:	Main.cpp
+Main.o:	Main.cpp
 	g++ -c Main.cpp
 
-cleam: rm -rf *o lab6

@@ -11,6 +11,7 @@ using namespace std;
 
 const string S_TO_D_COMMAND_VALUE = "40000810";
 const string D_TO_S_COMMAND_VALUE = "40000C18";
+const int NUMBER_OF_WORDS_IN_A_LINE = 14;
 
 void outputToScreen (const string &address, const string &data, const int &size, const string &cycle);
 unsigned int convertHexaToUnsignedInt (const string &hexVariable);
@@ -24,6 +25,7 @@ bool	getBool( std::string prompt );
 int main(void)
 {
 	ifstream inFile;
+	int numberOfWordEncounter = 0;
 	inFile.open("test_data.log");
 
 	if (!inFile.is_open())
@@ -43,11 +45,14 @@ int main(void)
 		do
 		{
 			inFile >> address;
+			numberOfWordEncounter++;
 		} while( address != S_TO_D_COMMAND_VALUE && address != D_TO_S_COMMAND_VALUE );
 
 		inFile >> data;
 		inFile >> size;
 		inFile >> cycle;
+
+		numberOfWordEncounter += 3;
 
 		int sizeInInt = convertSizeTypeToInt( size );
 
@@ -57,6 +62,10 @@ int main(void)
 		// Convert the hex in data variable to unsigned int
 		unsigned int wordCount = convertHexaToUnsignedInt (data);
 		cout << "Number of words: " << wordCount << endl;
+
+		// Output line number in a log file of the current address
+		cout << numberOfWordEncounter << endl;
+		cout << "Line number: " << (numberOfWordEncounter / NUMBER_OF_WORDS_IN_A_LINE) + 1 << endl;
 		
 		//if (wordCount > 0)
 		//{
@@ -101,14 +110,30 @@ void outputToScreen( const string &address, const string &data, const int &size,
 
 unsigned int convertHexaToUnsignedInt( const string &hexVariable )
 {
-	return stoi(hexVariable, nullptr, 16);
+	// return stoi(hexVariable, nullptr, 16);
+	// Alternative to stoi
+
+	unsigned int x;
+	stringstream ss;
+	ss << hex << hexVariable;
+	ss >> x;
+
+	return x;
 }
 
 // Size comes with D32 or D64. We need to get rid of the D and grab the number.
 int convertSizeTypeToInt( const string &sizeType )
 {
 	string str = sizeType.substr(1,2);
-	return stoi(str);
+	// return stoi(str);
+	// Alternative to stoi
+
+	unsigned int x;
+	stringstream ss;
+	ss << dec << str;
+	ss >> x;
+
+	return x;
 }
 
 // assumes that keyboard input buffer is empty
@@ -131,4 +156,5 @@ bool getBool( std::string prompt )
 		if( userAnswer == 'n' || userAnswer == 'N' ) return false;
 		std::cout << "Enter y, yes, n, or no." << std::endl;
 	} while( true );
+
 }

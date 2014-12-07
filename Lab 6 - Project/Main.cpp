@@ -1,4 +1,4 @@
-// Bounpaseuth Saysavath
+// Michael Cuvin, Jeremy Mann, Kyle Fox, Bounpaseuth Saysavath
 // Lab 6
 // CS 254
 
@@ -73,13 +73,15 @@ int main( void )
 		//	{
 		//		// search from the address of 40000818 to 40000C14
 		//		int startSearchingAddress = 0x40000818;
+		//		int stopSearchingAddress = 0x40000C14;
+		//		string nextWordOnALine;
 		//		
 		//		do
 		//		{
 		//			do
 		//			{
-		//				inFile >> address;
-		//			} while( address != "40000818" );
+		//				inFile >> nextWordOnALine;
+		//			} while( nextWordOnALine != "40000818" );
 
 		//			inFile >> data;
 
@@ -121,9 +123,9 @@ unsigned int convertHexaToUnsignedInt( const string &hexVariable )
 	return x;
 }
 
-// Size comes with D32 or D64. We need to get rid of the D and grab the number.
 int convertSizeTypeToInt( const string &sizeType )
 {
+	// Size comes with D32 or D64. We need to get rid of the D and grab the number.
 	string str = sizeType.substr( 1, 2 );
 	// return stoi(str);
 	// Alternative to stoi

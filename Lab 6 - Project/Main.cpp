@@ -325,7 +325,7 @@ string wordFields(int wordNum, int wordData)
                 ss << " Unknown\n";
                 break;
             }
-            break;
+        break;
         }
 
         case 22:
@@ -344,13 +344,77 @@ string wordFields(int wordNum, int wordData)
                 ss << " Unknown\n";
                 break;
             }
-            break;
+        break;
         }
 
         case 32:
         {
         int num_Samples = wordData & 0b11111111111111;
         ss << "Word 32: Number of Samples = " << num_Samples << "\n";
+        break;
+        }
+
+        case 37:
+        {
+        int parity = (wordData >> 15) & 0b1;
+        ss << "Word 37: Parity = " << parity;
+        switch(parity)
+            {
+            case 0:
+                ss << " Even\n";
+                break;
+            case 1:
+                ss << " Odd\n";
+                break;
+            default:
+                ss << " Unknown\n";
+                break;
+            }
+        break;
+        }
+
+        case 38:
+        {
+        int test = (wordData >> 14) & 0b1;
+        ss << "Word 38: Test = " << test;
+        switch(test)
+            {
+            case 0:
+                ss << " Disable\n";
+                break;
+            case 1:
+                ss << " Enable\n";
+                break;
+            default:
+                ss << " Unknown\n";
+                break;
+            }
+        break;
+        }
+
+        case 40:
+        {
+        int ctrl_Enable = (wordData >> 7) & 0b1;
+        ss << "Word 40: ctrl_Enable = " << ctrl_Enable;
+        switch(ctrl_Enable)
+            {
+            case 0:
+                ss << " Disable\n";
+                break;
+            case 1:
+                ss << " Enable\n";
+                break;
+            default:
+                ss << " Unknown\n";
+                break;
+            }
+        break;
+        }
+
+        case 41:
+        {
+        int code = (wordData >> 8) & 0b1111111;
+        ss << "Word 41: Code = " << code << "\n";
         }
     }
 

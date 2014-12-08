@@ -21,6 +21,7 @@ void outputToScreen( const string &address, const string &data, const int &size,
 unsigned int convertHexStringToUnsignedInt( const string &hexVariable );
 int convertSizeTypeToInt( const string &sizeType );
 string convertHexIntToDecimalString( const int &hexValue );
+string wordFields(int wordNum, int wordData);
 
 // Tool Function to pause the screen
 void pause( std::string prompt = "Press ENTER to continue..." );
@@ -74,8 +75,7 @@ int main( int argc, char *argv[] )
 
 		// Convert the hex in data variable to unsigned int
 		unsigned int byteCount = convertHexStringToUnsignedInt( data );
-		cout << "Number of words: " << byteCount/2
-		 << endl;
+		cout << "Number of words: " << byteCount/2 << endl;
 
 		// Output line number in a log file of the current address
 		cout << "Line number: " << (numberOfWordEncounter / NUMBER_OF_WORDS_IN_A_LINE) + 1 << endl;
@@ -223,4 +223,137 @@ bool getBool( std::string prompt )
 		std::cout << "Enter y, yes, n, or no." << std::endl;
 	} while( true );
 
+}
+
+//parses word data to find command from specified bits
+string wordFields(int wordNum, int wordData)
+{
+    string output;
+    stringstream ss;
+    switch(wordNum)
+    {
+        case 0:
+        {
+        int rec_Ctrl = (wordData >> 13) & 0b11;
+        ss << "Word 0: rec_Ctrl = " << rec_Ctrl;
+        switch(rec_Ctrl)
+            {
+            case 0:
+                ss << " (no recording)\n";
+                break;
+            case 2:
+                ss << " (no processing)\n";
+                break;
+            case 3:
+				ss << " (processing & recording)\n";
+                break;
+            default:
+                ss << " (unknown)\n";
+                break;
+            }
+        break;
+        }
+
+        case 1:
+        {
+        int cmd_Type = (wordData >> 13) &0b111;
+        ss << "Word 1: cmd_Type = " << cmd_Type;
+        switch(cmd_Type)
+            {
+            case 4:
+                ss << " Type A\n";
+                break;
+            case 5:
+                ss << " Type B\n";
+                break;
+            case 6:
+                ss << " Type C\n";
+                break;
+            default:
+                ss << " Type Unkown\n";
+                break;
+            }
+        break;
+        }
+
+        case 4:
+        {
+        int rec_Raw = wordData & 0b1;
+        ss << "Word 4: rec_Raw = " << rec_Raw;
+        switch(rec_Raw)
+            {
+            case 0:
+                ss << ": Disable\n";
+                break;
+            case 1:
+                ss << ": Enable\n";
+                break;
+            default:
+                ss << ": Unknown\n";
+                break;
+            }
+        break;
+        }
+
+        case 5:
+        {
+        int cmd_ID = wordData & 0b1111111;
+        ss << "Word 5: cmd_ID = " << cmd_ID << "\n";
+        break;
+        }
+
+        case 10:
+        {
+        int num_Responses = (wordData >> 11) & 0b11111;
+        ss << "Word 10: num_Responses = " << num_Responses << "\n";
+        break;
+        }
+
+        case 15:
+        {
+        int reset_Enable = (wordData >> 2) & 0b1;
+        ss << "Word 15: reset_Enable = " << reset_Enable;
+        switch(reset_Enable)
+            {
+            case 0:
+                ss << " Disable\n";
+                break;
+            case 1:
+                ss << " Enable\n";
+                break;
+            default:
+                ss << " Unknown\n";
+                break;
+            }
+            break;
+        }
+
+        case 22:
+        {
+        int direction = (wordData >> 3) & 0b1;
+        ss << "Word 22: Direction = " << direction;
+        switch(direction)
+            {
+            case 0:
+                ss << " Right\n";
+                break;
+            case 1:
+                ss << " Left\n";
+                break;
+            default:
+                ss << " Unknown\n";
+                break;
+            }
+            break;
+        }
+
+        case 32:
+        {
+        int num_Samples = wordData & 0b11111111111111;
+        ss << "Word 32: Number of Samples = " << num_Samples << "\n";
+        }
+    }
+
+    output = ss.str();
+    return output;
 }

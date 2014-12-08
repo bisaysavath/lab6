@@ -73,15 +73,16 @@ int main( int argc, char *argv[] )
 		outputToScreen( address, data, sizeInInt, cycle );
 
 		// Convert the hex in data variable to unsigned int
-		unsigned int wordCount = convertHexStringToUnsignedInt( data );
-		cout << "Number of words: " << wordCount << endl;
+		unsigned int byteCount = convertHexStringToUnsignedInt( data );
+		cout << "Number of words: " << byteCount/2
+		 << endl;
 
 		// Output line number in a log file of the current address
 		cout << "Line number: " << (numberOfWordEncounter / NUMBER_OF_WORDS_IN_A_LINE) + 1 << endl;
 
 		queue<string> wordsData;
 
-		if (wordCount > 0)
+		if (byteCount > 0)
 		{
 			if (address == S_TO_D_COMMAND_VALUE)
 			{
@@ -91,14 +92,14 @@ int main( int argc, char *argv[] )
 				string nextWordOnALine;
 				int loopCount = 0;
 				bool stopSearch = false;
-				
+
 				do
 				{
 					do
 					{
 						inFile >> nextWordOnALine;
 						loopCount++;
-					
+
 						// If in the next 11 words the nextWordOnALine is not the address we expect to encouter break the loop
 						if( loopCount == 11 && (convertHexIntToDecimalString( convertHexStringToUnsignedInt( nextWordOnALine ) )
 							!= convertHexIntToDecimalString( nextSearchingAddress ) ) )
@@ -134,7 +135,7 @@ int main( int argc, char *argv[] )
 				} while( nextSearchingAddress <= stopSearchingAddress );
 			}
 			//else
-				// search from the address of 40000C20 to 4000101C 
+				// search from the address of 40000C20 to 4000101C
 		}
 
 
@@ -197,7 +198,7 @@ string convertHexIntToDecimalString( const int &hexValue )
 	int x;
 	stringstream ss;
 	ss << dec << hexValue;
-	
+
 	return ss.str();
 }
 

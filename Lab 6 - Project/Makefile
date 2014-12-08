@@ -6,3 +6,4 @@ lab6:	Main.o
 Main.o:	Main.cpp
 	g++ -c Main.cpp
 
+clean: 	rm -rf *o lab6

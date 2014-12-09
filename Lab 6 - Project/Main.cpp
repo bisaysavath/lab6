@@ -23,10 +23,10 @@ const int NUMBER_OF_WORDS_IN_A_LINE = 14;
 
 void output( const string &address, const string &data, const string &cycle, const int &lineNumber, const int &wordCount );
 unsigned int convertHexStringToUnsignedInt( const string &hexVariable );
-string hexStringToBinaryString( const string &hexString );
-string hexCharToBinaryString( const char &getChar );
+//string hexStringToBinaryString( const string &hexString );
+//string hexCharToBinaryString( const char &getChar );
 //int convertHexIntToDecInt( const int &hexValue );
-int convertStringToInt( const string &stringValue );
+//int convertStringToInt( const string &stringValue );
 //string convertHexIntToDecimalString( const int &hexValue );
 int getLineNumber( const int &numberOfWordEncounter );
 bool addressMatch( const string &currentAdrress, const vector<string> &addressRange, bool &lowToHigh );
@@ -138,8 +138,16 @@ int main( int argc, char *argv[] )
                     break;
 
                 // Store data in a  wordsData queue file structure
-                wordsData.push_back( nextWordOnALine.substr( 0, 4 ) );
-                wordsData.push_back( nextWordOnALine.substr( 4, 8 ) );
+                if( lowToHigh )
+                {
+                    wordsData.push_back( nextWordOnALine.substr( 0, 4 ) );
+                    wordsData.push_back( nextWordOnALine.substr( 4, 8 ) );
+                }
+                else
+                {
+                    wordsData.push_back( nextWordOnALine.substr( 4, 8 ) );
+                    wordsData.push_back( nextWordOnALine.substr( 0, 4 ) );
+                }
 
                 lineNumber.push_back( getLineNumber( numberOfWordEncounter ) );
                 lineNumber.push_back( getLineNumber( numberOfWordEncounter ) );
@@ -212,43 +220,43 @@ unsigned int convertHexStringToUnsignedInt( const string &hexVariable )
     return x;
 }
 
-string hexStringToBinaryString( const string &hexString )
-{
-    string stringBuilder;
+//string hexStringToBinaryString( const string &hexString )
+//{
+//    string stringBuilder;
+//
+//    for( string::size_type index = 0; index < hexString.size(); index++ )
+//    {
+//        stringBuilder += hexCharToBinaryString( hexString[index] );
+//    }
+//
+//    return stringBuilder;
+//}
 
-    for( string::size_type index = 0; index < hexString.size(); index++ )
-    {
-        stringBuilder += hexCharToBinaryString( hexString[index] );
-    }
-
-    return stringBuilder;
-}
-
-string hexCharToBinaryString( const char &getChar )
-{
-    switch( getChar )
-    {
-    case '0':   return "0000";
-    case '1':   return "0001";
-    case '2':   return "0010";
-    case '3':   return "0011";
-    case '4':   return "0100";
-    case '5':   return "0101";
-    case '6':   return "0110";
-    case '7':   return "0111";
-    case '8':   return "1000";
-    case '9':   return "1001";
-    case 'A':   return "1010";
-    case 'B':   return "1011";
-    case 'C':   return "1100";
-    case 'D':   return "1101";
-    case 'E':   return "1110";
-    case 'F':   return "1111";
-    default:
-        return "EROR";
-        break;
-    }
-}
+//string hexCharToBinaryString( const char &getChar )
+//{
+//    switch( getChar )
+//    {
+//    case '0':   return "0000";
+//    case '1':   return "0001";
+//    case '2':   return "0010";
+//    case '3':   return "0011";
+//    case '4':   return "0100";
+//    case '5':   return "0101";
+//    case '6':   return "0110";
+//    case '7':   return "0111";
+//    case '8':   return "1000";
+//    case '9':   return "1001";
+//    case 'A':   return "1010";
+//    case 'B':   return "1011";
+//    case 'C':   return "1100";
+//    case 'D':   return "1101";
+//    case 'E':   return "1110";
+//    case 'F':   return "1111";
+//    default:
+//        return "EROR";
+//        break;
+//    }
+//}
 
 //int convertHexIntToDecInt( const int &hexValue )
 //{
@@ -260,20 +268,20 @@ string hexCharToBinaryString( const char &getChar )
 //  return x;
 //}
 
-int convertStringToInt( const string &stringValue )
-{
-    // Size comes with D32 or D64. We need to get rid of the D and grab the number.
-    //string str = sizeType.substr( 1, 2 );
-    //return stoi(stringValue, nullptr, 2);
-    // Alternative to stoi
-
-    long int x;
-    stringstream ss;
-    ss << stringValue;
-    ss >> x;
-
-    return x;
-}
+//int convertStringToInt( const string &stringValue )
+//{
+//    // Size comes with D32 or D64. We need to get rid of the D and grab the number.
+//    //string str = sizeType.substr( 1, 2 );
+//    //return stoi(stringValue, nullptr, 2);
+//    // Alternative to stoi
+//
+//    long int x;
+//    stringstream ss;
+//    ss << stringValue;
+//    ss >> x;
+//
+//    return x;
+//}
 
 //string convertHexIntToDecimalString( const int &hexValue )
 //{

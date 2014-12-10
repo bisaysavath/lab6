@@ -1,6 +1,7 @@
 // Michael Cuvin, Jeremy Mann, Kyle Fox, Bounpaseuth Saysavath
 // Lab 6
 // CS 254
+// Extra Credit
 
 #include <iostream>
 #include <fstream>
@@ -62,6 +63,10 @@ public:
     void openOfStream( const string &fileName );
     // Convert a string to uppercase
     string toUpper( std::string s );
+    // Convert a string to an int
+    float convertStringToFloat( const string &stringValue );
+    void grabRelTimeAndType( const string &relTimeString, string &relTimeUnit, float &relTime);
+
 
 private:
     ifstream inFile;
@@ -70,9 +75,14 @@ private:
     int numberOfWordEncounter = 0;
 
     string address;
+    string relTime;
     string data;
     string sizeData;
     string cycle;
+
+    string relTimeUnit;
+    int sizeDataTotal = 0;
+    float relTimeTotal = 0.0f;
 };
 
 int main( int argc, char *argv[] )
@@ -92,17 +102,17 @@ int main( int argc, char *argv[] )
 	}
 	else //Runs the program if there is the proper argument
 	{
-		filePath = argv[1];
+		//filePath = argv[1];
 
 		wordParser wordParserTest(filePath);
 
 		wordParserTest.runAProcess();
 
-		time = clock() - time;
-		float seconds = ((float)time) / CLOCKS_PER_SEC;
-		cout << "Completed in " << seconds << " secs."<< endl;
+		//time = clock() - time;
+		//float seconds = ((float)time) / CLOCKS_PER_SEC;
+		//cout << "Completed in " << seconds << " secs."<< endl;
 
-		pause( "Press enter to exit." );
+		//pause( "Press enter to exit." );
 	}
 
     return 0;
@@ -149,6 +159,7 @@ void wordParser::runAProcess(void)
             vector<string> wordsData;
             vector<int> lineNumber;
             vector<string> addressRange;
+            relTimeTotal = 0;
 
             if( address == S_TO_D_COMMAND_VALUE )
             {
@@ -214,7 +225,14 @@ void wordParser::runAProcess(void)
                 // Discard the next fourteen words
                 for( int i = 1; i <= 14; i++ )
                 {
-                    inFile >> nextWordOnALine;
+                    if( i == 9 )
+                    {
+                        inFile >> relTime;
+                        grabRelTimeAndType(relTime, relTimeUnit, relTimeTotal);
+                    }
+                    else
+                        inFile >> nextWordOnALine;
+
                     numberOfWordEncounter++;
                 }
 
@@ -222,7 +240,18 @@ void wordParser::runAProcess(void)
 
             } while( loopCount < (wordCount / 2) );
 
-            if( lowToHigh )
+            if( !lowToHigh && (address == D_TO_S_COMMAND_VALUE) )
+            {
+                for( int wordNumber = 0;( wordNumber < (wordsData.size()) ); wordNumber++ )
+                {
+                    if( wordNumberToOutputMatch( wordNumber ) )
+                    {
+                        outFile << "Line " << lineNumber[wordNumber] << ": ";
+                        outFile << ( wordFields(wordNumber, convertHexStringToUnsignedInt( wordsData[wordNumber] ) ) );
+                    }
+                }
+            }
+            else if( lowToHigh )
             {
                 for( int wordNumber = 0;( wordNumber < (wordsData.size()) ); wordNumber++ )
                 {
@@ -553,7 +582,7 @@ void wordParser::openIfStream( const string &filePath )
 
 void wordParser::openOfStream( const string &fileName )
 {
-    outFile.open( fileName );
+    outFile.open( "/Users/billysaysavath/Desktop/Lab 6 - Project/Lab 6 - Project/" + fileName );
 
     if( !outFile.is_open( ) )
     {
@@ -561,6 +590,28 @@ void wordParser::openOfStream( const string &fileName )
         pause( "Press enter to exit." );
         exit( 1 );
     }
+}
+
+float wordParser::convertStringToFloat( const string &stringValue )
+{
+    // Size comes with D32 or D64. We need to get rid of the D and grab the number.
+    //string str = sizeType.substr( 1, 2 );
+    //return stoi(stringValue, nullptr, 2);
+    // Alternative to stoi
+
+    float x;
+    stringstream ss;
+    ss << stringValue;
+    ss >> x;
+
+    return x;
+}
+
+void wordParser::grabRelTimeAndType( const string &relTimeString, string &relTimeUnit, float &relTime)
+{
+    int stringLength = relTimeString.length();
+    relTimeUnit = relTimeString.substr( stringLength - 2, 2 );
+    relTime += convertStringToFloat( relTimeString.substr( 0, stringLength - 2 ) );
 }
 
 // assumes that keyboard input buffer is empty

@@ -80,18 +80,33 @@ int main( int argc, char *argv[] )
     clock_t time;
     time = clock();
 
-    string filePath = argv[1];
+	string filePath;
 
-    wordParser wordParserTest(filePath);
+	//argc needs to be 2 for execution
+	if(argc != 2)
+	{
+		//argv[0] is the program name
+		//Tells user that there was no argument given
+		cout << "usage: " << argv[0];
+		cout << "\nNo argument given\n";
+	}
+	else //Runs the program if there is the proper argument
+	{
+		filePath = argv[1];
 
-    wordParserTest.runAProcess();
+		wordParser wordParserTest(filePath);
 
-    time = clock() - time;
-    float seconds = ((float)time) / CLOCKS_PER_SEC;
-    cout << "Completed in " << seconds << " secs."<< endl;
+		wordParserTest.runAProcess();
 
-    pause( "Press enter to exit." );
+		time = clock() - time;
+		float seconds = ((float)time) / CLOCKS_PER_SEC;
+		cout << "Completed in " << seconds << " secs."<< endl;
+
+		pause( "Press enter to exit." );
+	}
+
     return 0;
+
 }
 
 void wordParser::runAProcess(void)

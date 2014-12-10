@@ -1,6 +1,7 @@
 // Michael Cuvin, Jeremy Mann, Kyle Fox, Bounpaseuth Saysavath
 // Lab 6
 // CS 254
+// T/Th 7:00pm 
 
 #include <iostream>
 #include <fstream>
@@ -16,8 +17,6 @@ using namespace std;
 void pause( std::string prompt = "Press ENTER to continue..." );
 // Function to get boolean from user
 bool getBool( std::string prompt );
-
-// We need to have a function that writes the output to a file
 
 class wordParser
 {
@@ -82,28 +81,29 @@ int main( int argc, char *argv[] )
 
 	string filePath;
 
-	//argc needs to be 2 for execution
+	// argc needs to be 2 for execution
+	// Program exits without argument
 	if(argc != 2)
 	{
-		//argv[0] is the program name
-		//Tells user that there was no argument given
+		// argv[0] is the program name
+		// Tells user that there was no argument given
 		cout << "usage: " << argv[0];
 		cout << "\nNo argument given\n";
+		exit(1);
 	}
-	else //Runs the program if there is the proper argument
-	{
-		filePath = argv[1];
+	
+	filePath = argv[1];
 
-		wordParser wordParserTest(filePath);
+	wordParser wordParserTest(filePath);
 
-		wordParserTest.runAProcess();
+	wordParserTest.runAProcess();
 
-		time = clock() - time;
-		float seconds = ((float)time) / CLOCKS_PER_SEC;
-		cout << "Completed in " << seconds << " secs."<< endl;
+	// Calculates the time it takes to run the program
+	time = clock() - time;
+	float seconds = ((float)time) / CLOCKS_PER_SEC;
+	cout << "Completed in " << seconds << " secs."<< endl;
 
-		pause( "Press enter to exit." );
-	}
+	pause( "Press enter to exit." );
 
     return 0;
 
@@ -270,8 +270,6 @@ void wordParser::output( const string &address, const string &data, const string
 
 unsigned int wordParser::convertHexStringToUnsignedInt( const string &hexVariable )
 {
-    // return stoi(hexVariable, nullptr, 16);
-    // Alternative to stoi
 
     unsigned int x;
     stringstream ss;

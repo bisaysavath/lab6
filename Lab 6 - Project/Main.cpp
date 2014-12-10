@@ -327,7 +327,7 @@ string wordParser::wordFields( int wordNum, int wordData )
     case 0:
     {
               int rec_Ctrl = (wordData >> 13) & 0b11;
-              ss << "Word 0: rec_Ctrl = " << rec_Ctrl;
+              ss << "Word 0: Rec_Ctrl = " << rec_Ctrl;
               switch( rec_Ctrl )
               {
               case 0:
@@ -349,20 +349,20 @@ string wordParser::wordFields( int wordNum, int wordData )
     case 1:
     {
               int cmd_Type = (wordData >> 13) & 0b111;
-              ss << "Word 1: cmd_Type = " << cmd_Type;
+              ss << "Word 1: Cmd_Type = " << cmd_Type;
               switch( cmd_Type )
               {
               case 4:
-                  ss << " Type A\n";
+                  ss << " (Type A)\n";
                   break;
               case 5:
-                  ss << " Type B\n";
+                  ss << " (Type B)\n";
                   break;
               case 6:
-                  ss << " Type C\n";
+                  ss << " (Type C)\n";
                   break;
               default:
-                  ss << " Type Unkown\n";
+                  ss << " (unknown)\n";
                   break;
               }
               break;
@@ -371,17 +371,17 @@ string wordParser::wordFields( int wordNum, int wordData )
     case 4:
     {
               int rec_Raw = wordData & 0b1;
-              ss << "Word 4: rec_Raw = " << rec_Raw;
+              ss << "Word 4: Rec_Raw = " << rec_Raw;
               switch( rec_Raw )
               {
               case 0:
-                  ss << ": Disable\n";
+                  ss << ": (disable)\n";
                   break;
               case 1:
-                  ss << ": Enable\n";
+                  ss << ": (enable)\n";
                   break;
               default:
-                  ss << ": Unknown\n";
+                  ss << ": (unknown)\n";
                   break;
               }
               break;
@@ -390,31 +390,31 @@ string wordParser::wordFields( int wordNum, int wordData )
     case 5:
     {
               int cmd_ID = wordData & 0b1111111;
-              ss << "Word 5: cmd_ID = " << cmd_ID << "\n";
+              ss << "Word 5: Cmd_ID = " << cmd_ID << "\n";
               break;
     }
 
     case 10:
     {
                int num_Responses = (wordData >> 11) & 0b11111;
-               ss << "Word 10: num_Responses = " << num_Responses << "\n";
+               ss << "Word 10: Num_Responses = " << num_Responses << "\n";
                break;
     }
 
     case 15:
     {
                int reset_Enable = (wordData >> 2) & 0b1;
-               ss << "Word 15: reset_Enable = " << reset_Enable;
+               ss << "Word 15: Reset_Enable = " << reset_Enable;
                switch( reset_Enable )
                {
                case 0:
-                   ss << " Disable\n";
+                   ss << " (disable)\n";
                    break;
                case 1:
-                   ss << " Enable\n";
+                   ss << " (enable)\n";
                    break;
                default:
-                   ss << " Unknown\n";
+                   ss << " (unknown)\n";
                    break;
                }
                break;
@@ -427,13 +427,13 @@ string wordParser::wordFields( int wordNum, int wordData )
                switch( direction )
                {
                case 0:
-                   ss << " Right\n";
+                   ss << " (Right)\n";
                    break;
                case 1:
-                   ss << " Left\n";
+                   ss << " (Left)\n";
                    break;
                default:
-                   ss << " Unknown\n";
+                   ss << " (unknown)\n";
                    break;
                }
                break;
@@ -453,13 +453,13 @@ string wordParser::wordFields( int wordNum, int wordData )
                switch( parity )
                {
                case 0:
-                   ss << " Even\n";
+                   ss << " (even)\n";
                    break;
                case 1:
-                   ss << " Odd\n";
+                   ss << " (odd)\n";
                    break;
                default:
-                   ss << " Unknown\n";
+                   ss << " (unknown)\n";
                    break;
                }
                break;
@@ -472,13 +472,13 @@ string wordParser::wordFields( int wordNum, int wordData )
                switch( test )
                {
                case 0:
-                   ss << " Disable\n";
+                   ss << " (disable)\n";
                    break;
                case 1:
-                   ss << " Enable\n";
+                   ss << " (enable)\n";
                    break;
                default:
-                   ss << " Unknown\n";
+                   ss << " (unknown)\n";
                    break;
                }
                break;
@@ -487,17 +487,17 @@ string wordParser::wordFields( int wordNum, int wordData )
     case 40:
     {
                int ctrl_Enable = (wordData >> 7) & 0b1;
-               ss << "Word 40: ctrl_Enable = " << ctrl_Enable;
+               ss << "Word 40: Ctrl_Enable = " << ctrl_Enable;
                switch( ctrl_Enable )
                {
                case 0:
-                   ss << " Disable\n";
+                   ss << " (disable)\n";
                    break;
                case 1:
-                   ss << " Enable\n";
+                   ss << " (enable)\n";
                    break;
                default:
-                   ss << " Unknown\n";
+                   ss << " (unknown)\n";
                    break;
                }
                break;

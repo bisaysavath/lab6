@@ -99,21 +99,19 @@ int main( int argc, char *argv[] )
 		//Tells user that there was no argument given
 		cout << "usage: " << argv[0];
 		cout << "\nNo argument given\n";
+		exit(1);
 	}
-	else //Runs the program if there is the proper argument
-	{
-		filePath = argv[1];
+	filePath = argv[1];
 
-		wordParser wordParserTest(filePath);
+	wordParser wordParserTest(filePath);
 
-		wordParserTest.runAProcess();
+	wordParserTest.runAProcess();
 
-		//time = clock() - time;
-		//float seconds = ((float)time) / CLOCKS_PER_SEC;
-		//cout << "Completed in " << seconds << " secs."<< endl;
+	//time = clock() - time;
+	//float seconds = ((float)time) / CLOCKS_PER_SEC;
+	//cout << "Completed in " << seconds << " secs."<< endl;
 
-		//pause( "Press enter to exit." );
-	}
+	//pause( "Press enter to exit." );
 
     return 0;
 

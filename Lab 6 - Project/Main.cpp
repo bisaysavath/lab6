@@ -102,7 +102,7 @@ int main( int argc, char *argv[] )
 	}
 	else //Runs the program if there is the proper argument
 	{
-		//filePath = argv[1];
+		filePath = argv[1];
 
 		wordParser wordParserTest(filePath);
 

@@ -8,84 +8,128 @@
 #include <cstdlib>
 #include <sstream>
 #include <vector>
-#include <bitset>
+#include <time.h>
 
 using namespace std;
-
-const string S_TO_D_COMMAND_VALUE = "40000810";
-const string D_TO_S_COMMAND_VALUE = "40000C18";
-
-const int S_TO_D_COMMAND_START_ADDRESS = 0x40000818;
-const int S_TO_D_COMMAND_END_ADDRESS = 0x40000C14;
-const int D_TO_S_COMMAND_START_ADDRESS = 0x40000C20;
-const int D_TO_S_COMMAND_END_ADDRESS = 0x4000101C;
-const int NUMBER_OF_WORDS_IN_A_LINE = 14;
-
-void output( const string &address, const string &data, const string &cycle, const int &lineNumber, const int &wordCount );
-unsigned int convertHexStringToUnsignedInt( const string &hexVariable );
-//string hexStringToBinaryString( const string &hexString );
-//string hexCharToBinaryString( const char &getChar );
-//int convertHexIntToDecInt( const int &hexValue );
-//int convertStringToInt( const string &stringValue );
-//string convertHexIntToDecimalString( const int &hexValue );
-int getLineNumber( const int &numberOfWordEncounter );
-bool addressMatch( const string &currentAdrress, const vector<string> &addressRange, bool &lowToHigh );
-bool wordNumberToOutputMatch( const int &wordNumber );
-string wordFields( int wordNum, int wordData );
-
-vector<string> generateAddressRange( const int &start, const int &end, int increment = 4 );
 
 // Tool Function to pause the screen
 void pause( std::string prompt = "Press ENTER to continue..." );
 // Function to get boolean from user
 bool getBool( std::string prompt );
-// Convert a string to uppercase
-std::string toUpper( std::string s );
 
 // We need to have a function that writes the output to a file
 
-int main( int argc, char *argv[] )
+class wordParser
 {
-    ifstream inFile;
-    inFile.open( "test_data.log" );
+public:
+    // Declare all the constants
+    const string S_TO_D_COMMAND_VALUE = "40000810";
+    const string D_TO_S_COMMAND_VALUE = "40000C18";
 
-    if( !inFile.is_open( ) )
+    const int S_TO_D_COMMAND_START_ADDRESS = 0x40000818;
+    const int S_TO_D_COMMAND_END_ADDRESS = 0x40000C14;
+    const int D_TO_S_COMMAND_START_ADDRESS = 0x40000C20;
+    const int D_TO_S_COMMAND_END_ADDRESS = 0x4000101C;
+    const int NUMBER_OF_WORDS_IN_A_LINE = 14;
+
+
+    // Constructor takes one path to a file as a string argument and opens the inFile variable
+    wordParser(const string &filePath)
     {
-        cout << "Can't open test_data.log" << endl;
-        pause( "Press enter to exit." );
-        exit( 1 );
+        openIfStream( filePath );
+        openOfStream( "outputs.txt");
     }
 
+    // Destructor closes the fstream files
+    ~wordParser(void)
+    {
+        inFile.close();
+        outFile.close();
+    }
+
+    // Perform a process
+    void runAProcess(void);
+
+    // Neccessary Functions
+    vector<string> generateAddressRange( const int &start, const int &end, int increment = 4 );
+    void output( const string &address, const string &data, const string &cycle, const int &lineNumber, const int &wordCount );
+    unsigned int convertHexStringToUnsignedInt( const string &hexVariable );
+    int getLineNumber( const int &numberOfWordEncounter );
+    bool addressMatch( const string &currentAdrress, const vector<string> &addressRange, bool &lowToHigh );
+    bool wordNumberToOutputMatch( const int &wordNumber );
+    string wordFields( int wordNum, int wordData );
+    void openIfStream( const string &filePath );
+    void openOfStream( const string &fileName );
+    // Convert a string to uppercase
+    string toUpper( std::string s );
+
+private:
+    ifstream inFile;
+    ofstream outFile;
+
     int numberOfWordEncounter = 0;
+
     string address;
     string data;
-    string size;
+    string sizeData;
     string cycle;
+};
 
+int main( int argc, char *argv[] )
+{
+    clock_t time;
+    time = clock();
+
+    string filePath = argv[1];
+
+    wordParser wordParserTest(filePath);
+
+    wordParserTest.runAProcess();
+
+    time = clock() - time;
+    float seconds = ((float)time) / CLOCKS_PER_SEC;
+    cout << "Completed in " << seconds << " secs."<< endl;
+
+    pause( "Press enter to exit." );
+    return 0;
+}
+
+void wordParser::runAProcess(void)
+{
     vector<string> SToDCommandAddressRange = generateAddressRange( S_TO_D_COMMAND_START_ADDRESS, S_TO_D_COMMAND_END_ADDRESS );
     vector<string> DToSCommandAddressRange = generateAddressRange( D_TO_S_COMMAND_START_ADDRESS, D_TO_S_COMMAND_END_ADDRESS );
+    bool reachTheEndOfAFile = false;
 
-    do
+    while(true)
     {
         do
         {
             inFile >> address;
             numberOfWordEncounter++;
+
+            if( inFile.eof() )
+            {
+                reachTheEndOfAFile = true;
+                break;
+            }
+
         } while( address != S_TO_D_COMMAND_VALUE && address != D_TO_S_COMMAND_VALUE );
 
+        if( reachTheEndOfAFile )
+            break;
+
         inFile >> data;
-        inFile >> size;
+        inFile >> sizeData;
         inFile >> cycle;
 
         numberOfWordEncounter += 3;
 
-        /*int sizeInInt = convertSizeTypeToInt( size );*/
         int wordCount = convertHexStringToUnsignedInt( data ) / 2;
 
         // Output the variables to the screen
         output( address, data, cycle, getLineNumber( numberOfWordEncounter ), wordCount );
 
-        if (wordCount > 0)
+        if( wordCount > 0 )
         {
             vector<string> wordsData;
             vector<int> lineNumber;
@@ -169,8 +213,8 @@ int main( int argc, char *argv[] )
                 {
                     if( wordNumberToOutputMatch( wordNumber ) )
                     {
-                        cout << "Line " << lineNumber[wordNumber] << ": ";
-                        cout << ( wordFields(wordNumber, convertHexStringToUnsignedInt( wordsData[wordNumber] ) ) );
+                        outFile << "Line " << lineNumber[wordNumber] << ": ";
+                        outFile << ( wordFields(wordNumber, convertHexStringToUnsignedInt( wordsData[wordNumber] ) ) );
                     }
                 }
             }
@@ -181,8 +225,8 @@ int main( int argc, char *argv[] )
                 {
                     if( wordNumberToOutputMatch( wordNumber ) )
                     {
-                        cout << "Line " << lineNumber[index] << ": ";
-                        cout << ( wordFields(wordNumber, convertHexStringToUnsignedInt( wordsData[index] ) ) );
+                        outFile << "Line " << lineNumber[index] << ": ";
+                        outFile << ( wordFields(wordNumber, convertHexStringToUnsignedInt( wordsData[index] ) ) );
                     }
 
                     index++;
@@ -190,24 +234,26 @@ int main( int argc, char *argv[] )
             }
         }
 
-        cout << endl;
-    } while( getBool( "Keep looking?" ) && !inFile.eof( ) );
+        outFile << endl;
+    }
 
-
-    inFile.close( );
-
-    pause( "Press enter to exit." );
-    return 0;
+    if( reachTheEndOfAFile )
+        cout << "Process completed! Outputs are in outputs.txt" << endl;
+    else
+    {
+        cout << "Error: Did not complete the process." << endl;
+        exit(1);
+    }
 }
 
-void output( const string &address, const string &data, const string &cycle, const int &lineNumber, const int &wordCount )
+void wordParser::output( const string &address, const string &data, const string &cycle, const int &lineNumber, const int &wordCount )
 {
-    cout << "Line " << lineNumber << ": " << ( (cycle == "Rd")? "Read " : "Write " );
-    cout << ((address == S_TO_D_COMMAND_VALUE) ? "S-to-D Command: " : "D-to-S Command: ");
-    cout << wordCount << " words" << endl;
+    outFile << "Line " << lineNumber << ": " << ( (cycle == "Rd")? "Read " : "Write " );
+    outFile << ((address == S_TO_D_COMMAND_VALUE) ? "S-to-D Command: " : "D-to-S Command: ");
+    outFile << wordCount << " words" << endl;
 }
 
-unsigned int convertHexStringToUnsignedInt( const string &hexVariable )
+unsigned int wordParser::convertHexStringToUnsignedInt( const string &hexVariable )
 {
     // return stoi(hexVariable, nullptr, 16);
     // Alternative to stoi
@@ -220,83 +266,14 @@ unsigned int convertHexStringToUnsignedInt( const string &hexVariable )
     return x;
 }
 
-//string hexStringToBinaryString( const string &hexString )
-//{
-//    string stringBuilder;
-//
-//    for( string::size_type index = 0; index < hexString.size(); index++ )
-//    {
-//        stringBuilder += hexCharToBinaryString( hexString[index] );
-//    }
-//
-//    return stringBuilder;
-//}
 
-//string hexCharToBinaryString( const char &getChar )
-//{
-//    switch( getChar )
-//    {
-//    case '0':   return "0000";
-//    case '1':   return "0001";
-//    case '2':   return "0010";
-//    case '3':   return "0011";
-//    case '4':   return "0100";
-//    case '5':   return "0101";
-//    case '6':   return "0110";
-//    case '7':   return "0111";
-//    case '8':   return "1000";
-//    case '9':   return "1001";
-//    case 'A':   return "1010";
-//    case 'B':   return "1011";
-//    case 'C':   return "1100";
-//    case 'D':   return "1101";
-//    case 'E':   return "1110";
-//    case 'F':   return "1111";
-//    default:
-//        return "EROR";
-//        break;
-//    }
-//}
 
-//int convertHexIntToDecInt( const int &hexValue )
-//{
-//  int x;
-//  stringstream ss;
-//  ss << hex << hexValue;
-//  ss >> x;
-//
-//  return x;
-//}
-
-//int convertStringToInt( const string &stringValue )
-//{
-//    // Size comes with D32 or D64. We need to get rid of the D and grab the number.
-//    //string str = sizeType.substr( 1, 2 );
-//    //return stoi(stringValue, nullptr, 2);
-//    // Alternative to stoi
-//
-//    long int x;
-//    stringstream ss;
-//    ss << stringValue;
-//    ss >> x;
-//
-//    return x;
-//}
-
-//string convertHexIntToDecimalString( const int &hexValue )
-//{
-//  stringstream ss;
-//  ss << dec << hexValue;
-//
-//  return ss.str();
-//}
-
-int getLineNumber( const int &numberOfWordEncounter )
+int wordParser::getLineNumber( const int &numberOfWordEncounter )
 {
     return (numberOfWordEncounter / NUMBER_OF_WORDS_IN_A_LINE) + 1;
 }
 
-bool addressMatch( const string &currentAdrress, const vector<string> &addressRange, bool &lowToHigh )
+bool wordParser::addressMatch( const string &currentAdrress, const vector<string> &addressRange, bool &lowToHigh )
 {
     for( unsigned int index = 0; index < addressRange.size(); index++ )
     {
@@ -311,7 +288,7 @@ bool addressMatch( const string &currentAdrress, const vector<string> &addressRa
     return false;
 }
 
-bool wordNumberToOutputMatch( const int &wordNumber )
+bool wordParser::wordNumberToOutputMatch( const int &wordNumber )
 {
     int wordNumberNeededOutput[] = {0, 1, 4, 5, 10, 15, 22, 32, 37, 38, 40, 41};
     for( int index = 0; index < 12; index++ )
@@ -326,7 +303,7 @@ bool wordNumberToOutputMatch( const int &wordNumber )
 }
 
 //parses word data to find command from specified bits
-string wordFields( int wordNum, int wordData )
+string wordParser::wordFields( int wordNum, int wordData )
 {
     string output;
     stringstream ss;
@@ -522,7 +499,7 @@ string wordFields( int wordNum, int wordData )
     return output;
 }
 
-vector<string> generateAddressRange( const int &start, const int &end, int increment )
+vector<string> wordParser::generateAddressRange( const int &start, const int &end, int increment )
 {
     int range = ( end - start ) / 2;
     int hexValue = start;
@@ -538,6 +515,37 @@ vector<string> generateAddressRange( const int &start, const int &end, int incre
     }
 
     return temp;
+}
+
+string wordParser::toUpper( std::string s )
+{
+    for( std::string::size_type index = 0; index < s.length( ); ++index )
+        s[index] = toupper( s[index] );
+    return s;
+}
+
+void wordParser::openIfStream( const string &filePath )
+{
+    inFile.open( filePath );
+
+    if( !inFile.is_open( ) )
+    {
+        cout << "Can't open test_data.log" << endl;
+        pause( "Press enter to exit." );
+        exit( 1 );
+    }
+}
+
+void wordParser::openOfStream( const string &fileName )
+{
+    outFile.open( fileName );
+
+    if( !outFile.is_open( ) )
+    {
+        cout << "Error: Can't write to the file." << endl;
+        pause( "Press enter to exit." );
+        exit( 1 );
+    }
 }
 
 // assumes that keyboard input buffer is empty
@@ -561,11 +569,4 @@ bool getBool( std::string prompt )
         std::cout << "Enter y, yes, n, or no." << std::endl;
     } while( true );
 
-}
-
-std::string toUpper( std::string s )
-{
-    for( std::string::size_type index = 0; index < s.length( ); ++index )
-        s[index] = toupper( s[index] );
-    return s;
 }
